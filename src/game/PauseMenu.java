@@ -1,5 +1,7 @@
 package game;
 
-public class PauseMenu {
+import javax.swing.JPanel;
+
+public class PauseMenu extends JPanel {
 
 }

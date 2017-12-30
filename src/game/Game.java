@@ -33,6 +33,7 @@ public class Game implements ActionListener, KeyListener {
 	
 	public static Game game;
 	
+	private Timer timer;
 	private Renderer renderer;
 	private Snake playerOneSnake, playerTwoSnake, computerSnake;
 	private PoisonousFruit badFruit;
@@ -49,7 +50,7 @@ public class Game implements ActionListener, KeyListener {
 
 	private JFrame gameWindow;
 
-	private JPanel mainMenu, pauseMenu, gameOverMenu;
+	private JPanel pauseMenu, gameOverMenu;
 	
 	public static void main(String[] args) {
 		game = new Game();
@@ -58,10 +59,6 @@ public class Game implements ActionListener, KeyListener {
 	public Game() {
 		gameWindow = new JFrame("Snake Game");
 		renderer = new Renderer();
-		mainMenu = new MainMenu();
-		
-		Timer timer = new Timer(20, this);
-		
 		
 		rand = new Random(System.currentTimeMillis());
 		pressedKeys = new HashSet<KeyEvent>();
@@ -82,10 +79,8 @@ public class Game implements ActionListener, KeyListener {
 		mode = GameMode.NONE;
 		state = GameState.MENU;
 		
-		gameWindow.add(renderer);
-		timer.start();
+		gameWindow.add(new MainMenu());
 		
-
 	}
 	
 	public void repaint(Graphics2D g) {
@@ -124,7 +119,6 @@ public class Game implements ActionListener, KeyListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		renderer.repaint();
-		
 	}
 	
 	/**
@@ -139,6 +133,50 @@ public class Game implements ActionListener, KeyListener {
 	 */
 	public void setState(GameState state) {
 		this.state = state;
+		switch(this.state) {
+			case MENU: {
+				game.gameWindow.removeAll();
+				game.gameWindow.invalidate();
+				game.gameWindow.add(new MainMenu());
+				game.gameWindow.revalidate();
+				game.gameWindow.repaint();
+				break;
+			}
+			case PAUSED: {
+				game.gameWindow.add(new PauseMenu());
+				break;
+			}
+			case HIGH_SCORES: {
+				game.gameWindow.removeAll();
+				game.gameWindow.invalidate();
+				game.gameWindow.repaint();
+				game.gameWindow.add(new MainMenu()); //TODO: Fix this.
+				game.gameWindow.revalidate();
+				break;
+			}
+			case PLAYING: {
+				game.gameWindow.removeAll();
+				game.gameWindow.invalidate();
+				game.gameWindow.add(renderer);
+				game.gameWindow.revalidate();
+				game.gameWindow.repaint();
+				
+				timer = new Timer(20, this);
+				timer.start();
+				break;
+			}
+			case GAMEOVER: {
+				game.gameWindow.removeAll();
+				game.gameWindow.invalidate();
+				game.gameWindow.add(new GameOverMenu());
+				game.gameWindow.revalidate();
+				game.gameWindow.repaint();
+				break;
+			}
+			default: {
+				break;
+			}
+		}
 	}
 
 	/**

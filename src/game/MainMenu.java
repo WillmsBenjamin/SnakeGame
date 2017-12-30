@@ -176,6 +176,7 @@ public class MainMenu extends JPanel {
 		gbc_authorLabel.gridy = 13;
 		add(authorLabel, gbc_authorLabel);
 
+		resetView();
 	    refreshData();
 	    
 	    soloButton.addActionListener(new java.awt.event.ActionListener() {
@@ -224,7 +225,7 @@ public class MainMenu extends JPanel {
 		if(gapsLabel.isVisible()) {
 			enableFruitOptionsView();
 		} else if(fruitLabel.isVisible()) {
-			resetView();
+			resetView();							//TODO: Implement this method to reset to the original button visibility. 
 		}
 		
 	}
@@ -262,6 +263,40 @@ public class MainMenu extends JPanel {
 		enableFruitOptionsView();
 	}
 
+	private void resetView() {
+		soloButton.setEnabled(true);
+		soloButton.setVisible(true);
+		
+		soloVSButton.setEnabled(true);
+		soloVSButton.setVisible(true);
+		
+		localMultiplayerButton.setEnabled(true);
+		localMultiplayerButton.setVisible(true);
+		
+		onlineMultiplayerButton.setEnabled(true);
+		onlineMultiplayerButton.setVisible(true);
+		
+		highScoresButton.setEnabled(true);
+		highScoresButton.setVisible(true);
+		
+		//Disable and hide secondary buttons and labels
+		gapsLabel.setVisible(false);
+		fruitLabel.setVisible(false);
+		
+		yesButton.setEnabled(false);
+		yesButton.setVisible(false);
+		
+		noButton.setEnabled(false);
+		noButton.setVisible(false);
+		
+		backButton.setEnabled(false);
+		backButton.setVisible(false);
+		
+		//refresh menu
+		refreshData();
+		
+	}
+	
 	private void enableFruitOptionsView() {
 		soloButton.setEnabled(false);
 		soloButton.setVisible(false);

@@ -1,5 +1,7 @@
 package game;
 
-public class GameOverMenu {
+import javax.swing.JPanel;
+
+public class GameOverMenu extends JPanel {
 
 }
