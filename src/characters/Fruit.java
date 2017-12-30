@@ -1,6 +1,5 @@
 package characters;
 
-import java.awt.Rectangle;
 import java.awt.geom.Ellipse2D;
 
 import controls.Effect;

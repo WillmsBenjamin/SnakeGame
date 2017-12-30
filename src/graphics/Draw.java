@@ -3,7 +3,10 @@ package graphics;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
 
+import characters.NutritiousFruit;
+import characters.PoisonousFruit;
 import characters.Snake;
 import characters.Walls;
 import game.Game;
@@ -27,5 +30,19 @@ public class Draw {
 	public static void paintBackground(Graphics2D g) {
 		g.setColor(Game.BACKGROUND_COLOR);
 		g.fillRect(0, 0, Game.GAME_SIZE, Game.GAME_SIZE);
+	}
+	
+	public static void paintNutritiousFruit(Graphics2D g, NutritiousFruit fruit) {
+		g.setColor(Color.red.brighter());
+		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+			    RenderingHints.VALUE_ANTIALIAS_ON);
+		g.fill(fruit.getFruit());
+	}
+	
+	public static void paintPoisonousFruit(Graphics2D g, PoisonousFruit fruit) {
+		g.setColor(Color.green.brighter());
+		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+			    RenderingHints.VALUE_ANTIALIAS_ON);
+		g.fill(fruit.getFruit());
 	}
 }

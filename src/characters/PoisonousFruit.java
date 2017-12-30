@@ -2,14 +2,14 @@ package characters;
 
 import controls.Effect;
 
-public class PoisonFruit extends Fruit {
+public class PoisonousFruit extends Fruit {
 	
-	public PoisonFruit() {
+	public PoisonousFruit() {
 		super();
 		effect = Effect.POISON;
 	}
 	
-	public PoisonFruit(int x, int y) {
+	public PoisonousFruit(int x, int y) {
 		super(x, y);
 		effect = Effect.POISON;
 	}
