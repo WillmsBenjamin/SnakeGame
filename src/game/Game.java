@@ -1,5 +1,6 @@
 package game;
 
+import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -48,7 +49,7 @@ public class Game implements ActionListener, KeyListener {
 	private GameMode mode;
 	private GameOptions fruitOption, gapsOption;
 
-	private JFrame gameWindow;
+	private GameFrame gameWindow;
 
 	private JPanel pauseMenu, gameOverMenu;
 	
@@ -57,8 +58,8 @@ public class Game implements ActionListener, KeyListener {
 	}
 	
 	public Game() {
-		gameWindow = new JFrame("Snake Game");
 		renderer = new Renderer();
+		gameWindow = new GameFrame();
 		
 		rand = new Random(System.currentTimeMillis());
 		pressedKeys = new HashSet<KeyEvent>();
@@ -79,17 +80,36 @@ public class Game implements ActionListener, KeyListener {
 		mode = GameMode.NONE;
 		state = GameState.MENU;
 		
-		gameWindow.add(new MainMenu());
+		gameWindow.setContentPane(new MainMenu());
+
+		timer = new Timer(1000/SPEED, this);
+		timer.start();
 		
 	}
 	
 	public void repaint(Graphics2D g) {
+		switch(state) {
+			case PLAYING: {
+				Draw.paintBackground(g);
+				Draw.paintWalls(g, boundaries);
+				Draw.paintNutritiousFruit(g, goodFruit);
+				Draw.paintPoisonousFruit(g, badFruit);
+				Draw.paintSnake(g, playerOneSnake, PLAYER_ONE_COLOR);
+			}
+			case MENU: {
+				
+			}
+			case PAUSED: {
+				
+			}
+			case HIGH_SCORES: {
+				
+			}
+			case GAMEOVER: {
+				
+			}
+		}
 		
-		Draw.paintBackground(g);
-		Draw.paintWalls(g, boundaries);
-		Draw.paintNutritiousFruit(g, goodFruit);
-		Draw.paintPoisonousFruit(g, badFruit);
-		Draw.paintSnake(g, playerOneSnake, PLAYER_ONE_COLOR);
 		
 	}
 
@@ -133,50 +153,35 @@ public class Game implements ActionListener, KeyListener {
 	 */
 	public void setState(GameState state) {
 		this.state = state;
+		JPanel content = game.gameWindow.getContentPane();
+		CardLayout layout = (CardLayout) content.getLayout();
 		switch(this.state) {
 			case MENU: {
-				game.gameWindow.removeAll();
-				game.gameWindow.invalidate();
-				game.gameWindow.add(new MainMenu());
-				game.gameWindow.revalidate();
-				game.gameWindow.repaint();
+				layout.show(content, "Main Menu");
 				break;
 			}
 			case PAUSED: {
-				game.gameWindow.add(new PauseMenu());
+				layout.show(content, "Game");
+				game.gameWindow.showPauseMenu();
 				break;
 			}
 			case HIGH_SCORES: {
-				game.gameWindow.removeAll();
-				game.gameWindow.invalidate();
-				game.gameWindow.repaint();
-				game.gameWindow.add(new MainMenu()); //TODO: Fix this.
-				game.gameWindow.revalidate();
+				layout.show(content, "High Scores");
 				break;
 			}
 			case PLAYING: {
-				game.gameWindow.removeAll();
-				game.gameWindow.invalidate();
-				game.gameWindow.add(renderer);
-				game.gameWindow.revalidate();
-				game.gameWindow.repaint();
-				
-				timer = new Timer(20, this);
-				timer.start();
+				layout.show(content, "Game");
+				game.gameWindow.hidePauseMenu();
 				break;
 			}
 			case GAMEOVER: {
-				game.gameWindow.removeAll();
-				game.gameWindow.invalidate();
-				game.gameWindow.add(new GameOverMenu());
-				game.gameWindow.revalidate();
-				game.gameWindow.repaint();
 				break;
 			}
 			default: {
 				break;
 			}
 		}
+		game.gameWindow.repaint();				//TODO: Fix the card layout so that it actually shows the correct cards.
 	}
 
 	/**
@@ -227,4 +232,12 @@ public class Game implements ActionListener, KeyListener {
 	public JFrame getGameWindow() {
 		return gameWindow;
 	}
+	
+	/**
+	 * @return the renderer
+	 */
+	public Renderer getRenderer() {
+		return renderer;
+	}
+
 }

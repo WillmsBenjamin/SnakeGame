@@ -53,9 +53,9 @@ public class MainMenu extends JPanel {
 		
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[]{816, 0};
-		gridBagLayout.rowHeights = new int[] {50, 0, 70, 0, 40, 0, 40, 0, 40, 0, 40, 0, 140, 0, 0};
+		gridBagLayout.rowHeights = new int[] {50, 130, 70, 46, 40, 46, 40, 46, 40, 46, 40, 46, 130, 0, 0};
 		gridBagLayout.columnWeights = new double[]{0.0, Double.MIN_VALUE};
-		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gridBagLayout.rowWeights = new double[]{50.0, 130.0, 70.0, 46.0, 40.0, 46.0, 40.0, 46.0, 40.0, 46.0, 40.0, 46.0, 130.0, 0.0, 0.0, Double.MIN_VALUE};
 		setLayout(gridBagLayout);
 		
 		mainTitleLabel = new JLabel("Snake Game");
@@ -234,7 +234,7 @@ public class MainMenu extends JPanel {
 		if(gapsLabel.isVisible()) {
 			
 			Game.game.setGapsOption(GameOptions.NO_GAPS);
-			Game.game.setState(GameState.PAUSED);
+			Game.game.setState(GameState.PLAYING);
 			
 		} else if(fruitLabel.isVisible()) {
 			
@@ -248,7 +248,7 @@ public class MainMenu extends JPanel {
 		if(gapsLabel.isVisible()) {
 			
 			Game.game.setGapsOption(GameOptions.GAPS);
-			Game.game.setState(GameState.PAUSED);
+			Game.game.setState(GameState.PLAYING);
 			
 		} else if(fruitLabel.isVisible()) {
 			
