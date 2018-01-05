@@ -12,15 +12,21 @@ import java.awt.Dimension;
 import javax.swing.JLayeredPane;
 import java.awt.FlowLayout;
 import org.eclipse.wb.swing.FocusTraversalOnArray;
+
+import graphics.Renderer;
+
 import java.awt.Component;
+import java.awt.GridBagLayout;
+import java.awt.Color;
+import javax.swing.border.MatteBorder;
 
 public class GameFrame extends JFrame {
 
-	private JPanel contentPane, gamePanel;
+	private JPanel contentPane;
+	private Renderer gamePanel;
 	private MainMenu mainMenu;
 	private PauseMenu pauseMenu;
 	private HighScoresMenu highScoresMenu;
-	private JLayeredPane gamePane;
 	
 	private WindowState state;
 
@@ -29,15 +35,15 @@ public class GameFrame extends JFrame {
 	 */
 	public GameFrame() {
 		setTitle("Snake Game");
-		setResizable(false);
+		Dimension size = new Dimension(Game.GAME_SIZE + 6, Game.GAME_SIZE + 35);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(Game.GAME_SIZE/* + 18*/, Game.GAME_SIZE /*+ 47*/);
+		setSize(size);
+		setResizable(false);
 		setVisible(true);
-		
-		Dimension size = new Dimension(Game.GAME_SIZE, Game.GAME_SIZE);
 		
 		contentPane = new JPanel();
 		contentPane.setBorder(null);
+		contentPane.setSize(size);
 		setContentPane(contentPane);
 		contentPane.setLayout(new CardLayout(0, 0));
 		
@@ -47,60 +53,43 @@ public class GameFrame extends JFrame {
 		highScoresMenu = new HighScoresMenu();
 		contentPane.add(highScoresMenu, "High Scores");
 		
-		gamePane = new JLayeredPane();
-		contentPane.add(gamePane, "Game");
-		
-		gamePanel = new JPanel();
-		gamePanel.setSize(size);
-		gamePanel.setMinimumSize(size);
-		gamePanel.setMaximumSize(size);
-		gamePane.add(gamePanel);
+		gamePanel = new Renderer();
+		contentPane.add(gamePanel, "Game");
+//		gamePanel.setPreferredSize(size);
+//		gamePanel.setMinimumSize(size);
+//		gamePanel.setMaximumSize(size);
 		
 		pauseMenu = new PauseMenu();
-		pauseMenu.setSize(size);
-		pauseMenu.setMinimumSize(size);
-		pauseMenu.setMaximumSize(size);
-		pauseMenu.setOpaque(false);
-		gamePane.add(pauseMenu);
-		
-		gamePane.setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{gamePanel, pauseMenu}));
-		contentPane.setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{mainMenu, highScoresMenu, gamePane}));
+		contentPane.add(pauseMenu, "Pause Menu");
+		contentPane.setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{mainMenu, highScoresMenu, gamePanel, pauseMenu}));
 	}
 	
-	public void showPauseMenu() {
-		setupGraphics();
-		gamePane.setLayer(pauseMenu, 0);
-		gamePane.setLayer(Game.game.getRenderer(), 1);
-	}
-	
-	public void hidePauseMenu() {
-		setupGraphics();
-		gamePane.setLayer(pauseMenu, 1);
-		gamePane.setLayer(Game.game.getRenderer(), 0);
-	}
-	
-	public void setupGraphics() {
-		Component[] components = gamePanel.getComponents();
-		boolean isFound = false;
-		for (Component c : components) {
-			if (c == Game.game.getRenderer()) {
-				isFound = true;
-				break;
-			} else {
-				isFound = false;
-				continue;
-			}
-		}
-		if(!isFound) {
-			gamePanel.add(Game.game.getRenderer());
-		}
-	}
+//	public void setupGraphics() {
+//		Component[] components = gamePanel.getComponents();
+//		boolean isFound = false;
+//		for (Component c : components) {
+//			if (c == Game.game.getRenderer()) {
+//				isFound = true;
+//				break;
+//			} else {
+//				isFound = false;
+//				continue;
+//			}
+//		}
+//		if(!isFound) {
+//			gamePanel.add(Game.game.getRenderer());
+//		}
+//	}
 	
 	/**
 	 * @return the contentPane
 	 */
 	public JPanel getContentPane() {
 		return contentPane;
+	}
+	
+	public Renderer getGamePanel() {
+		return gamePanel;
 	}
 
 }

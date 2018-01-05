@@ -7,5 +7,4 @@ public enum GameMode {
 	SOLO,
 	SOLO_VS,
 	NONE;
-	
 }

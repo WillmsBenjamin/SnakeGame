@@ -21,7 +21,7 @@ public class Snake {
 	private LinkedList<Rectangle> bodyParts;
 	
 	private Direction headDirection;
-	
+
 	public Snake() {
 		bodyParts = new LinkedList<Rectangle>();
 		headDirection = Direction.NONE;
@@ -121,14 +121,20 @@ public class Snake {
 	 */
 	public void slither(Direction direction) {
 		
+		Rectangle currentHead = bodyParts.getFirst();
+		
 		headDirection = direction;
 		bodyParts.removeLast();
 		
-		Rectangle currentHead = bodyParts.getFirst();
-		
 		switch(headDirection) {
 			case NORTH:  {
-				bodyParts.addFirst(new Rectangle(currentHead.x, currentHead.y - Game.BLOCK_SIZE, Game.BLOCK_SIZE, Game.BLOCK_SIZE));
+				if (currentHead.y - Game.BLOCK_SIZE < 0) {
+					bodyParts.addFirst(new Rectangle(currentHead.x, Game.GAME_SIZE - Game.BLOCK_SIZE, Game.BLOCK_SIZE,
+							Game.BLOCK_SIZE));
+				} else {
+					bodyParts.addFirst(new Rectangle(currentHead.x, currentHead.y - Game.BLOCK_SIZE, Game.BLOCK_SIZE,
+							Game.BLOCK_SIZE));
+				}
 				break;
 			}
 			case EAST: {
@@ -136,7 +142,13 @@ public class Snake {
 				break;
 			}
 			case SOUTH: {
-				bodyParts.addFirst(new Rectangle(currentHead.x, currentHead.y + Game.BLOCK_SIZE, Game.BLOCK_SIZE, Game.BLOCK_SIZE));
+				if (currentHead.y + Game.BLOCK_SIZE >= Game.GAME_SIZE) {
+					bodyParts.addFirst(new Rectangle(currentHead.x, 0, Game.BLOCK_SIZE,
+							Game.BLOCK_SIZE));
+				} else {
+					bodyParts.addFirst(new Rectangle(currentHead.x, currentHead.y + Game.BLOCK_SIZE, Game.BLOCK_SIZE,
+							Game.BLOCK_SIZE));
+				}
 				break;
 			}
 			case WEST: {
@@ -156,5 +168,12 @@ public class Snake {
 	 */
 	public LinkedList<Rectangle> getBodyParts() {
 		return bodyParts;
+	}
+	
+	/**
+	 * @return the headDirection
+	 */
+	public Direction getHeadDirection() {
+		return headDirection;
 	}
 }

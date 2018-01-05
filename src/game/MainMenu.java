@@ -41,21 +41,16 @@ public class MainMenu extends JPanel {
 	
 	private void initComponents() {
 		
-		Dimension size = new Dimension(Game.GAME_SIZE, Game.GAME_SIZE);
-		
-		setSize(size);
-		setMinimumSize(size);
-		setMaximumSize(size);
-		
+		Dimension size = new Dimension(Game.GAME_SIZE + 6, Game.GAME_SIZE + 35);
 
 		setBorder(new CompoundBorder(new CompoundBorder(new EtchedBorder(EtchedBorder.RAISED, new Color(255, 255, 0), new Color(0, 255, 0)), new MatteBorder(18, 18, 18, 18, (Color) new Color(255, 0, 0))), new EtchedBorder(EtchedBorder.RAISED, new Color(255, 255, 0), new Color(0, 255, 0))));
 		setBackground(Color.BLACK);
 		
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[]{816, 0};
-		gridBagLayout.rowHeights = new int[] {50, 130, 70, 46, 40, 46, 40, 46, 40, 46, 40, 46, 130, 0, 0};
+		gridBagLayout.rowHeights = new int[] {50, 130, 70, 46, 40, 46, 40, 46, 40, 46, 40, 46, 130, 0};
 		gridBagLayout.columnWeights = new double[]{0.0, Double.MIN_VALUE};
-		gridBagLayout.rowWeights = new double[]{50.0, 130.0, 70.0, 46.0, 40.0, 46.0, 40.0, 46.0, 40.0, 46.0, 40.0, 46.0, 130.0, 0.0, 0.0, Double.MIN_VALUE};
+		gridBagLayout.rowWeights = new double[]{50.0, 130.0, 70.0, 46.0, 40.0, 46.0, 40.0, 46.0, 40.0, 46.0, 40.0, 46.0, 130.0, 0.0, Double.MIN_VALUE};
 		setLayout(gridBagLayout);
 		
 		mainTitleLabel = new JLabel("Snake Game");
@@ -175,8 +170,13 @@ public class MainMenu extends JPanel {
 		gbc_authorLabel.gridx = 0;
 		gbc_authorLabel.gridy = 13;
 		add(authorLabel, gbc_authorLabel);
+		
+		this.setSize(size);
+//		this.setPreferredSize(size);
+//		this.setMinimumSize(size);
+//		this.setMaximumSize(size);
 
-		resetView();
+		//resetView();
 	    refreshData();
 	    
 	    soloButton.addActionListener(new java.awt.event.ActionListener() {
@@ -225,7 +225,7 @@ public class MainMenu extends JPanel {
 		if(gapsLabel.isVisible()) {
 			enableFruitOptionsView();
 		} else if(fruitLabel.isVisible()) {
-			resetView();							//TODO: Implement this method to reset to the original button visibility. 
+			resetView();
 		}
 		
 	}

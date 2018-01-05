@@ -23,11 +23,7 @@ public class PlaceholderMainMenu extends JPanel {
 	 * Create the panel.
 	 */
 	public PlaceholderMainMenu() {
-
 		Dimension size = new Dimension(Game.GAME_SIZE, Game.GAME_SIZE);
-		setSize(size);
-		setMinimumSize(size);
-		setMaximumSize(size);
 		
 		setBorder(new CompoundBorder(new CompoundBorder(new EtchedBorder(EtchedBorder.RAISED, new Color(255, 255, 0), new Color(0, 255, 0)), new MatteBorder(18, 18, 18, 18, (Color) new Color(255, 0, 0))), new EtchedBorder(EtchedBorder.RAISED, new Color(255, 255, 0), new Color(0, 255, 0))));
 		setBackground(Color.BLACK);
@@ -106,6 +102,10 @@ public class PlaceholderMainMenu extends JPanel {
 		gbc_authorLabel.gridx = 0;
 		gbc_authorLabel.gridy = 13;
 		add(authorLabel, gbc_authorLabel);
+		
+		setSize(size);
+		setMinimumSize(size);
+		setMaximumSize(size);
 
 	}
 

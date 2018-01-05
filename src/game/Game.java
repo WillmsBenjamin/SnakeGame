@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -26,11 +27,11 @@ import graphics.Renderer;
 
 public class Game implements ActionListener, KeyListener {
 
-	public static final int GRID_SIZE = 43, BLOCK_SIZE = 20, GAME_SIZE = GRID_SIZE*BLOCK_SIZE, SPEED = 3,
+	public static final int GRID_SIZE = 43, BLOCK_SIZE = 20, GAME_SIZE = GRID_SIZE*BLOCK_SIZE, SPEED = 10,
 			MIDDLE = (int) (BLOCK_SIZE*(Math.floor(Math.abs((GAME_SIZE/2)/BLOCK_SIZE))));
 	
 	public static Color PLAYER_ONE_COLOR = Color.cyan.darker(), PLAYER_TWO_COLOR = Color.green.darker(),
-			COMPUTER_ONE_COLOR = Color.red.darker(), BOUNDARY_COLOR = Color.gray, BACKGROUND_COLOR = Color.black;
+			COMPUTER_COLOR = Color.red.darker(), BOUNDARY_COLOR = Color.gray, BACKGROUND_COLOR = Color.black;
 	
 	public static Game game;
 	
@@ -39,105 +40,387 @@ public class Game implements ActionListener, KeyListener {
 	private Snake playerOneSnake, playerTwoSnake, computerSnake;
 	private PoisonousFruit badFruit;
 	private NutritiousFruit goodFruit;
-	private Walls boundaries;
+	private Walls gapsWalls, noGapsWalls;
 	
 	private Random rand;
 	
-	private HashSet<KeyEvent> pressedKeys;
+	private KeyEvent playerOneControl, playerTwoControl, pauseControl;
 	
 	private GameState state;
 	private GameMode mode;
 	private GameOptions fruitOption, gapsOption;
 
 	private GameFrame gameWindow;
-
-	private JPanel pauseMenu, gameOverMenu;
 	
 	public static void main(String[] args) {
 		game = new Game();
 	}
 	
 	public Game() {
-		renderer = new Renderer();
+//		renderer = new Renderer();
 		gameWindow = new GameFrame();
 		
 		rand = new Random(System.currentTimeMillis());
-		pressedKeys = new HashSet<KeyEvent>();
 		
 		gameWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		gameWindow.setSize(GAME_SIZE + 18, GAME_SIZE + 47);             //I hate to use magic numbers, but I'm not sure why the window didn't hold the correct size rectangle
-		gameWindow.setResizable(false);
 		gameWindow.addKeyListener(this);
 		gameWindow.setVisible(true);
 		
-		boundaries = new Walls(true, BOUNDARY_COLOR);
-		playerOneSnake = new Snake(MIDDLE, GAME_SIZE - 5*BLOCK_SIZE, 1, Direction.NORTH);
-		playerTwoSnake = new Snake(MIDDLE, 5*BLOCK_SIZE, 1, Direction.SOUTH);
-		computerSnake = new Snake(MIDDLE, 5*BLOCK_SIZE, 1, Direction.SOUTH);
-		badFruit = new PoisonousFruit(BLOCK_SIZE + rand.nextInt(GAME_SIZE - (3*BLOCK_SIZE)), BLOCK_SIZE + rand.nextInt(GAME_SIZE - (3*BLOCK_SIZE)));
-		goodFruit = new NutritiousFruit(BLOCK_SIZE + rand.nextInt(GAME_SIZE - (3*BLOCK_SIZE)), BLOCK_SIZE + rand.nextInt(GAME_SIZE - (3*BLOCK_SIZE)));
+		gapsWalls = new Walls(true, BOUNDARY_COLOR);
+		noGapsWalls = new Walls(false, BOUNDARY_COLOR);
+		playerOneSnake = new Snake(MIDDLE, GAME_SIZE - 5*BLOCK_SIZE, 3, Direction.NORTH);
+		playerTwoSnake = new Snake(MIDDLE, 5*BLOCK_SIZE, 3, Direction.SOUTH);
+		computerSnake = new Snake(MIDDLE, 5*BLOCK_SIZE, 3, Direction.SOUTH);
+		badFruit = new PoisonousFruit(BLOCK_SIZE + (int) (BLOCK_SIZE*(Math.floor(Math.abs((rand.nextInt(GAME_SIZE - (3*BLOCK_SIZE)))/BLOCK_SIZE)))),
+				BLOCK_SIZE + (int) (BLOCK_SIZE*(Math.floor(Math.abs((rand.nextInt(GAME_SIZE - (3*BLOCK_SIZE)))/BLOCK_SIZE)))));
+		
+		goodFruit = new NutritiousFruit(BLOCK_SIZE + (int) (BLOCK_SIZE*(Math.floor(Math.abs((rand.nextInt(GAME_SIZE - (3*BLOCK_SIZE)))/BLOCK_SIZE)))),
+				BLOCK_SIZE + (int) (BLOCK_SIZE*(Math.floor(Math.abs((rand.nextInt(GAME_SIZE - (3*BLOCK_SIZE)))/BLOCK_SIZE)))));
+		
+		playerOneControl = new KeyEvent(gameWindow, 0, 0, 0, KeyEvent.VK_0, '0');
+		playerTwoControl = new KeyEvent(gameWindow, 0, 0, 0, KeyEvent.VK_0, '0');
+		pauseControl = new KeyEvent(gameWindow, 0, 0, 0, KeyEvent.VK_0, '0');
 		
 		mode = GameMode.NONE;
 		state = GameState.MENU;
 		
-		gameWindow.setContentPane(new MainMenu());
-
-		timer = new Timer(1000/SPEED, this);
-		timer.start();
-		
 	}
 	
 	public void repaint(Graphics2D g) {
-		switch(state) {
-			case PLAYING: {
-				Draw.paintBackground(g);
-				Draw.paintWalls(g, boundaries);
-				Draw.paintNutritiousFruit(g, goodFruit);
-				Draw.paintPoisonousFruit(g, badFruit);
+		
+		Draw.paintBackground(g);
+		if(gapsOption == GameOptions.GAPS) {
+			Draw.paintWalls(g, gapsWalls);
+		} else {
+			Draw.paintWalls(g, noGapsWalls);
+		}
+		switch(mode) {
+			case LOCAL_MULTIPLAYER: {
+				Draw.paintSnake(g, playerTwoSnake, PLAYER_TWO_COLOR);
 				Draw.paintSnake(g, playerOneSnake, PLAYER_ONE_COLOR);
+				Draw.paintNutritiousFruit(g, goodFruit);
+				if(fruitOption == GameOptions.TWO_FRUITS) {
+					Draw.paintPoisonousFruit(g, badFruit);
+				}
+				break;
 			}
-			case MENU: {
+			case ONLINE_MULTIPLAYER: {
 				
+				break;
 			}
-			case PAUSED: {
-				
+			case SOLO: {
+				Draw.paintSnake(g, playerOneSnake, PLAYER_ONE_COLOR);
+				Draw.paintNutritiousFruit(g, goodFruit);
+				if(fruitOption == GameOptions.TWO_FRUITS) {
+					Draw.paintPoisonousFruit(g, badFruit);
+				}
+				break;
 			}
-			case HIGH_SCORES: {
-				
+			case SOLO_VS: {
+				Draw.paintSnake(g, computerSnake, COMPUTER_COLOR);
+				Draw.paintSnake(g, playerOneSnake, PLAYER_ONE_COLOR);
+				Draw.paintNutritiousFruit(g, goodFruit);
+				if(fruitOption == GameOptions.TWO_FRUITS) {
+					Draw.paintPoisonousFruit(g, badFruit);
+				}
+				break;
 			}
-			case GAMEOVER: {
+			case NONE: {
 				
+				break;
+			}
+			default: {
+				break;
+			}
+		}
+	}
+	
+	public void resetGoodFruit() {
+		goodFruit = new NutritiousFruit(BLOCK_SIZE + (int) (BLOCK_SIZE*(Math.floor(Math.abs((rand.nextInt(GAME_SIZE - (3*BLOCK_SIZE)))/BLOCK_SIZE)))),
+				BLOCK_SIZE + (int) (BLOCK_SIZE*(Math.floor(Math.abs((rand.nextInt(GAME_SIZE - (3*BLOCK_SIZE)))/BLOCK_SIZE)))));
+		
+		for(Rectangle rect : playerOneSnake.getBodyParts()) {
+			if(rect.intersects(goodFruit.getFruit().getFrame())) {
+				resetGoodFruit();
+				break;
 			}
 		}
 		
+		for(Rectangle rect : playerTwoSnake.getBodyParts()) {
+			if(rect.intersects(goodFruit.getFruit().getFrame())) {
+				resetGoodFruit();
+				break;
+			}
+		}
 		
+		for(Rectangle rect : computerSnake.getBodyParts()) {
+			if(rect.intersects(goodFruit.getFruit().getFrame())) {
+				resetGoodFruit();
+				break;
+			}
+		}
+	}
+	
+	public void resetBadFruit() {
+		badFruit = new PoisonousFruit(BLOCK_SIZE + (int) (BLOCK_SIZE*(Math.floor(Math.abs((rand.nextInt(GAME_SIZE - (3*BLOCK_SIZE)))/BLOCK_SIZE)))),
+				BLOCK_SIZE + (int) (BLOCK_SIZE*(Math.floor(Math.abs((rand.nextInt(GAME_SIZE - (3*BLOCK_SIZE)))/BLOCK_SIZE)))));
+		
+		for(Rectangle rect : playerOneSnake.getBodyParts()) {
+			if(rect.intersects(badFruit.getFruit().getFrame())) {
+				resetBadFruit();
+				break;
+			}
+		}
+		
+		for(Rectangle rect : playerTwoSnake.getBodyParts()) {
+			if(rect.intersects(badFruit.getFruit().getFrame())) {
+				resetBadFruit();
+				break;
+			}
+		}
+		
+		for(Rectangle rect : computerSnake.getBodyParts()) {
+			if(rect.intersects(badFruit.getFruit().getFrame())) {
+				resetBadFruit();
+				break;
+			}
+		}
 	}
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		if(e.getKeyCode() == KeyEvent.VK_A || e.getKeyCode() == KeyEvent.VK_S || e.getKeyCode() == KeyEvent.VK_W || e.getKeyCode() == KeyEvent.VK_D 
-				|| e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_RIGHT
-				|| e.getKeyCode() == KeyEvent.VK_ESCAPE || e.getKeyCode() == KeyEvent.VK_SPACE) {
-			pressedKeys.add(e);
+
+		if(e.getKeyCode() == KeyEvent.VK_A || e.getKeyCode() == KeyEvent.VK_S || e.getKeyCode() == KeyEvent.VK_W || e.getKeyCode() == KeyEvent.VK_D) {
+			switch(playerOneSnake.getHeadDirection()) {
+				case WEST : {
+					if(e.getKeyCode() != KeyEvent.VK_D) {
+						playerOneControl = e;
+					}
+					break;
+				}
+				case NORTH : {
+					if(e.getKeyCode() != KeyEvent.VK_S) {
+						playerOneControl = e;
+					}
+					break;
+				}
+				case EAST : {
+					if(e.getKeyCode() != KeyEvent.VK_A) {
+						playerOneControl = e;
+					}
+					break;
+				}
+				case SOUTH : {
+					if(e.getKeyCode() != KeyEvent.VK_W) {
+						playerOneControl = e;
+					}
+					break;
+				}
+				default : {
+					playerOneControl = e;
+					break;
+				}
+			}
+		} else if(e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_RIGHT) {
+			
+			switch(playerTwoSnake.getHeadDirection()) {
+				case SOUTH : {
+					if(e.getKeyCode() != KeyEvent.VK_UP) {
+						playerTwoControl = e;
+					}
+					break;
+				}
+				case NORTH : {
+					if(e.getKeyCode() != KeyEvent.VK_DOWN) {
+						playerTwoControl = e;
+					}
+					break;
+				}
+				case WEST : {
+					if(e.getKeyCode() != KeyEvent.VK_RIGHT) {
+						playerTwoControl = e;
+					}
+					break;
+				}
+				case EAST : {
+					if(e.getKeyCode() != KeyEvent.VK_LEFT) {
+						playerTwoControl = e;
+					}
+					break;
+				}
+				default : {
+					playerTwoControl = e;
+					break;
+				}
+			}
+		} else if(e.getKeyCode() == KeyEvent.VK_ESCAPE || e.getKeyCode() == KeyEvent.VK_SPACE) {
+			pauseControl = e;
 		}
+
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		if(e.getKeyCode() == KeyEvent.VK_A || e.getKeyCode() == KeyEvent.VK_S || e.getKeyCode() == KeyEvent.VK_W || e.getKeyCode() == KeyEvent.VK_D 
-				|| e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_RIGHT
-				|| e.getKeyCode() == KeyEvent.VK_ESCAPE || e.getKeyCode() == KeyEvent.VK_SPACE) {
-			pressedKeys.remove(e);
-		}
 	}
 
 	@Override
 	public void keyTyped(KeyEvent arg0) {
-		
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		
+		if(renderer == null) {
+			renderer = game.gameWindow.getGamePanel();
+		}
+		
+		if(pauseControl.getKeyCode() == KeyEvent.VK_ESCAPE || pauseControl.getKeyCode() == KeyEvent.VK_SPACE) {
+			game.setState(GameState.PAUSED);
+			pauseControl = new KeyEvent(gameWindow, 0, 0, 0, KeyEvent.VK_0, '0');
+		}
+		
+		if(state == GameState.PLAYING) {
+			switch(playerOneControl.getKeyCode()) {
+				case KeyEvent.VK_A : {
+					playerOneSnake.slither(Direction.WEST);
+					break;
+				}
+				case KeyEvent.VK_S : {
+					playerOneSnake.slither(Direction.SOUTH);
+					break;
+				}
+				case KeyEvent.VK_D : {
+					playerOneSnake.slither(Direction.EAST);
+					break;
+				}
+				case KeyEvent.VK_W : {
+					playerOneSnake.slither(Direction.NORTH);
+					break;
+				}
+				default : {
+					break;
+				}
+			}
+			
+			if (mode == GameMode.LOCAL_MULTIPLAYER || mode == GameMode.ONLINE_MULTIPLAYER) {
+				switch (playerTwoControl.getKeyCode()) {
+					case KeyEvent.VK_LEFT: {
+						playerTwoSnake.slither(Direction.WEST);
+						break;
+					}
+					case KeyEvent.VK_DOWN: {
+						playerTwoSnake.slither(Direction.SOUTH);
+						break;
+					}
+					case KeyEvent.VK_RIGHT: {
+						playerTwoSnake.slither(Direction.EAST);
+						break;
+					}
+					case KeyEvent.VK_UP: {
+						playerTwoSnake.slither(Direction.NORTH);
+						break;
+					}
+					default: {
+						break;
+					}
+				}
+				
+				//Fruit Collisions
+				if(playerTwoSnake.getBodyParts().getFirst().intersects(goodFruit.getFruit().getFrame())) {
+					playerTwoSnake.grow();
+					resetGoodFruit();
+				}
+				if (fruitOption == GameOptions.TWO_FRUITS) {
+					if (playerTwoSnake.getBodyParts().getFirst().intersects(badFruit.getFruit().getFrame())) {
+						if(playerTwoSnake.getBodyParts().size() == 1) {
+							game.setState(GameState.GAMEOVER);
+							return;
+						}
+						playerTwoSnake.shrink();
+						resetBadFruit();
+					} 
+				}
+				
+				//Wall collisions
+				if (gapsOption == GameOptions.GAPS) {
+					for (Rectangle rect : gapsWalls.getEdges()) {
+						if (playerTwoSnake.getBodyParts().getFirst().intersects(rect)) {
+							game.setState(GameState.GAMEOVER);
+							return;
+						}
+					} 
+				} else {
+					for (Rectangle rect : noGapsWalls.getEdges()) {
+						if (playerTwoSnake.getBodyParts().getFirst().intersects(rect)) {
+							game.setState(GameState.GAMEOVER);
+							return;
+						}
+					} 
+				}
+				
+				//Snake collisions
+				for (Rectangle rect : playerTwoSnake.getBodyParts()) {
+					if (playerOneSnake.getBodyParts().getFirst().intersects(rect)) {
+						game.setState(GameState.GAMEOVER);
+						return;
+					}
+				}
+				for (Rectangle rect : playerOneSnake.getBodyParts()) {
+					if (playerTwoSnake.getBodyParts().getFirst().intersects(rect)) {
+						game.setState(GameState.GAMEOVER);
+						return;
+					}
+				} 
+				for (Rectangle rect : playerTwoSnake.getBodyParts()) {
+					if (playerTwoSnake.getBodyParts().getFirst().intersects(rect) && rect != playerOneSnake.getBodyParts().getFirst()) {
+						game.setState(GameState.GAMEOVER);
+						return;
+					}
+				}
+			}
+			
+			//Fruit Collisions
+			if(playerOneSnake.getBodyParts().getFirst().intersects(goodFruit.getFruit().getFrame())) {
+				playerOneSnake.grow();
+				resetGoodFruit();
+			}
+			if (fruitOption == GameOptions.TWO_FRUITS) {
+				if (playerOneSnake.getBodyParts().getFirst().intersects(badFruit.getFruit().getFrame())) {
+					if(playerOneSnake.getBodyParts().size() == 1) {
+						game.setState(GameState.GAMEOVER);
+						return;
+					}
+					playerOneSnake.shrink();
+					resetBadFruit();
+				} 
+			}
+			
+			//Wall collisions
+			if (gapsOption == GameOptions.GAPS) {
+				for (Rectangle rect : gapsWalls.getEdges()) {
+					if (playerOneSnake.getBodyParts().getFirst().intersects(rect)) {
+						game.setState(GameState.GAMEOVER);
+						return;
+					}
+				} 
+			} else {
+				for (Rectangle rect : noGapsWalls.getEdges()) {
+					if (playerOneSnake.getBodyParts().getFirst().intersects(rect)) {
+						game.setState(GameState.GAMEOVER);
+						return;
+					}
+				} 
+			}
+			
+			//Snake collisions
+			for (Rectangle rect : playerOneSnake.getBodyParts()) {
+				if (playerOneSnake.getBodyParts().getFirst().intersects(rect) && rect != playerOneSnake.getBodyParts().getFirst()) {
+					game.setState(GameState.GAMEOVER);
+					return;
+				}
+			}
+			
+		}
 		renderer.repaint();
 	}
 	
@@ -157,31 +440,37 @@ public class Game implements ActionListener, KeyListener {
 		CardLayout layout = (CardLayout) content.getLayout();
 		switch(this.state) {
 			case MENU: {
+				layout.invalidateLayout(content);
 				layout.show(content, "Main Menu");
 				break;
 			}
 			case PAUSED: {
-				layout.show(content, "Game");
-				game.gameWindow.showPauseMenu();
+				layout.invalidateLayout(content);
+				layout.show(content, "Pause Menu");
+				timer.stop();
 				break;
 			}
 			case HIGH_SCORES: {
+				layout.invalidateLayout(content);
 				layout.show(content, "High Scores");
 				break;
 			}
 			case PLAYING: {
+				layout.invalidateLayout(content);
 				layout.show(content, "Game");
-				game.gameWindow.hidePauseMenu();
+				game.gameWindow.requestFocus();
+				timer = new Timer(1000/SPEED, this);
+				timer.start();
 				break;
 			}
 			case GAMEOVER: {
+				timer.stop();
 				break;
 			}
 			default: {
 				break;
 			}
 		}
-		game.gameWindow.repaint();				//TODO: Fix the card layout so that it actually shows the correct cards.
 	}
 
 	/**
