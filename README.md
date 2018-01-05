@@ -1,5 +1,7 @@
-# Snake Game
-A variant of the classic snake game.
+<p align="center">
+ <b><font size='24'>Snake Game</font></b><br>
+  A variant of the classic snake game.
+</p>
 
 ## Implemented Features:
   * Multiple fruit types (ex. poisonous causes the snake length to shrink)
