@@ -1,16 +1,18 @@
 # Snake Game
 A variant of the classic snake game.
 
-## Planned Features:
-
+## Implemented Features:
   * Multiple fruit types (ex. poisonous causes the snake length to shrink)
   * Option of classic (one fruit type), or new game modes
-  * Option of solo play and player vs computer play
+  * Option of solo play and local multiplayer
   * Detailed menu
-  * High-score persistence with XML.
   * Pause function
-  * Multiple map sizes
   * Optional wall gaps
+
+## Planned Features:
+  * Option of player vs computer play
+  * High-score persistence with XML.
+  * Multiple map sizes
  
 ## Possible Additions
 
