@@ -14,9 +14,9 @@ A variant of the classic snake game.
   * High-score persistence with XML.
   * Multiple map sizes
  
-## Possible Additions
+## Possible Additions:
 
-  * Multiplayer?
+  * Online multiplayer?
   * Detailed textures?
   * Player and Computer snake customization?
   * Difficulty levels?
