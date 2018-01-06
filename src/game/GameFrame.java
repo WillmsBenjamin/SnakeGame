@@ -22,13 +22,13 @@ import javax.swing.border.MatteBorder;
 
 public class GameFrame extends JFrame {
 
-	private JPanel contentPane;
-	private Renderer gamePanel;
+	private JPanel contentPane, gamePanel;
+	private Renderer renderer;
 	private MainMenu mainMenu;
-	private PauseMenu pauseMenu;
 	private HighScoresMenu highScoresMenu;
 	
 	private WindowState state;
+	private PauseMenu pauseMenu;
 
 	/**
 	 * Create the frame.
@@ -53,15 +53,24 @@ public class GameFrame extends JFrame {
 		highScoresMenu = new HighScoresMenu();
 		contentPane.add(highScoresMenu, "High Scores");
 		
-		gamePanel = new Renderer();
+		gamePanel = new JPanel();
+		renderer = new Renderer();
 		contentPane.add(gamePanel, "Game");
-//		gamePanel.setPreferredSize(size);
-//		gamePanel.setMinimumSize(size);
-//		gamePanel.setMaximumSize(size);
+		gamePanel.setLayout(null);
+		
+		gamePanel.add(renderer);
 		
 		pauseMenu = new PauseMenu();
-		contentPane.add(pauseMenu, "Pause Menu");
-		contentPane.setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{mainMenu, highScoresMenu, gamePanel, pauseMenu}));
+		pauseMenu.setBounds(215, 215, 430, 430);
+		pauseMenu.setOpaque(false);
+		pauseMenu.setVisible(false);
+//		GridBagLayout gridBagLayout = (GridBagLayout) pauseMenu.getLayout();
+//		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+//		gridBagLayout.rowHeights = new int[]{40, 81, 24, 28, 37, 28, 37, 28};
+//		gridBagLayout.columnWeights = new double[]{0.0};
+//		gridBagLayout.columnWidths = new int[]{623};
+		gamePanel.add(pauseMenu);
+		contentPane.setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{mainMenu, highScoresMenu, gamePanel}));
 	}
 	
 //	public void setupGraphics() {
@@ -88,8 +97,12 @@ public class GameFrame extends JFrame {
 		return contentPane;
 	}
 	
-	public Renderer getGamePanel() {
-		return gamePanel;
+	public Renderer getRenderer() {
+		return renderer;
+	}
+	
+	public PauseMenu getPauseMenu() {
+		return pauseMenu;
 	}
 
 }

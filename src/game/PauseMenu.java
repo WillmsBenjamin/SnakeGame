@@ -15,39 +15,51 @@ import java.awt.GridBagConstraints;
 import java.awt.Color;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.MatteBorder;
+import java.awt.CardLayout;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import org.eclipse.wb.swing.FocusTraversalOnArray;
+import java.awt.Component;
 
 public class PauseMenu extends JPanel {
 	
-	JLabel gamePausedLabel;
-	
-	JButton resumeButton, quitButton;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4719463789749185529L;
+	private JPanel pausePanel,gameOverPanel;
+	private JLabel pauseLabel, gameOverLabel;
+	private JButton resumeButton, restartButton, exitButton, endRestartButton, endExitButton;
 	
 	public PauseMenu() {
 		
-		setBorder(new MatteBorder(20, 20, 20, 20, (Color) Color.GRAY));
-		setBackground(Color.BLACK);
-		Dimension size = new Dimension(Game.GAME_SIZE, Game.GAME_SIZE);
+		setBorder(null);
+		Dimension size = new Dimension(Game.GAME_SIZE/2, Game.GAME_SIZE/2);
 		setSize(size);
 		setMinimumSize(size);
 		setMaximumSize(size);
-		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[]{816, 0};
-		gridBagLayout.rowHeights = new int[] {50, 130, 70, 46, 40, 46, 40, 46, 40, 46, 40, 46, 130, 0};
-		gridBagLayout.columnWeights = new double[]{0.0, Double.MIN_VALUE};
-		gridBagLayout.rowWeights = new double[]{50.0, 130.0, 70.0, 46.0, 40.0, 46.0, 40.0, 46.0, 40.0, 46.0, 40.0, 46.0, 130.0, 0.0};
-		setLayout(gridBagLayout);
+		setLayout(new CardLayout(0, 0));
 		
-		gamePausedLabel = new JLabel("Game Paused");
-		gamePausedLabel.setForeground(Color.GREEN);
-		gamePausedLabel.setVerticalAlignment(SwingConstants.TOP);
-		gamePausedLabel.setFont(new Font("AR DESTINE", Font.PLAIN, 99));
-		gamePausedLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		GridBagConstraints gbc_gamePausedLabel = new GridBagConstraints();
-		gbc_gamePausedLabel.insets = new Insets(0, 0, 5, 0);
-		gbc_gamePausedLabel.fill = GridBagConstraints.BOTH;
-		gbc_gamePausedLabel.gridx = 0;
-		gbc_gamePausedLabel.gridy = 1;
-		add(gamePausedLabel, gbc_gamePausedLabel);
+		pausePanel = new JPanel();
+		pausePanel.setBorder(new MatteBorder(5, 5, 5, 5, (Color) Color.GREEN));
+		pausePanel.setBackground(Color.GRAY);
+		add(pausePanel, "Pause");
+		GridBagLayout gbl_pausePanel = new GridBagLayout();
+		gbl_pausePanel.columnWidths = new int[] {430};
+		gbl_pausePanel.columnWeights = new double[]{0.0};
+		gbl_pausePanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+		pausePanel.setLayout(gbl_pausePanel);
+		
+		pauseLabel = new JLabel("Game Paused");
+		pauseLabel.setVerticalAlignment(SwingConstants.TOP);
+		pauseLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		pauseLabel.setForeground(Color.GREEN);
+		pauseLabel.setFont(new Font("AR DESTINE", Font.PLAIN, 54));
+		GridBagConstraints gbc_pauseLabel = new GridBagConstraints();
+		gbc_pauseLabel.insets = new Insets(0, 0, 5, 0);
+		gbc_pauseLabel.gridx = 0;
+		gbc_pauseLabel.gridy = 0;
+		pausePanel.add(pauseLabel, gbc_pauseLabel);
 		
 		resumeButton = new JButton("Resume Game");
 		resumeButton.setForeground(Color.BLACK);
@@ -55,39 +67,105 @@ public class PauseMenu extends JPanel {
 		GridBagConstraints gbc_resumeButton = new GridBagConstraints();
 		gbc_resumeButton.insets = new Insets(0, 0, 5, 0);
 		gbc_resumeButton.gridx = 0;
-		gbc_resumeButton.gridy = 5;
-		add(resumeButton, gbc_resumeButton);
+		gbc_resumeButton.gridy = 2;
+		pausePanel.add(resumeButton, gbc_resumeButton);
 		
-		quitButton = new JButton("Exit Game");
-		quitButton.setFont(new Font("AR DESTINE", Font.ITALIC, 29));
-		GridBagConstraints gbc_quitButton = new GridBagConstraints();
-		gbc_quitButton.insets = new Insets(0, 0, 5, 0);
-		gbc_quitButton.gridx = 0;
-		gbc_quitButton.gridy = 8;
-		add(quitButton, gbc_quitButton);
+		restartButton = new JButton("Restart Game");
+		restartButton.setFont(new Font("AR DESTINE", Font.ITALIC, 29));
+		GridBagConstraints gbc_restartButton = new GridBagConstraints();
+		gbc_restartButton.insets = new Insets(0, 0, 5, 0);
+		gbc_restartButton.gridx = 0;
+		gbc_restartButton.gridy = 4;
+		pausePanel.add(restartButton, gbc_restartButton);
 		
-		setOpaque(true);
+		exitButton = new JButton("Exit Game");
+		exitButton.setFont(new Font("AR DESTINE", Font.ITALIC, 29));
+		GridBagConstraints gbc_exitButton = new GridBagConstraints();
+		gbc_exitButton.insets = new Insets(0, 0, 5, 0);
+		gbc_exitButton.gridx = 0;
+		gbc_exitButton.gridy = 6;
+		pausePanel.add(exitButton, gbc_exitButton);
 		
+		gameOverPanel = new JPanel();
+		gameOverPanel.setBorder(new MatteBorder(5, 5, 5, 5, (Color) Color.GREEN));
+		gameOverPanel.setBackground(Color.GRAY);
+		add(gameOverPanel, "Game Over");
+		GridBagLayout gbl_gameOverPanel = new GridBagLayout();
+		gbl_gameOverPanel.columnWidths = new int[] {430};
+		gbl_gameOverPanel.columnWeights = new double[]{0.0};
+		gbl_gameOverPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0};
+		gameOverPanel.setLayout(gbl_gameOverPanel);
+		
+		gameOverLabel = new JLabel("Game Over!");
+		gameOverLabel.setVerticalAlignment(SwingConstants.TOP);
+		gameOverLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		gameOverLabel.setForeground(Color.GREEN);
+		gameOverLabel.setFont(new Font("AR DESTINE", Font.PLAIN, 54));
+		GridBagConstraints gbc_gameOverLabel = new GridBagConstraints();
+		gbc_gameOverLabel.insets = new Insets(0, 0, 5, 0);
+		gbc_gameOverLabel.gridx = 0;
+		gbc_gameOverLabel.gridy = 0;
+		gameOverPanel.add(gameOverLabel, gbc_gameOverLabel);
+		
+		endRestartButton = new JButton("Restart Game");
+		endRestartButton.setForeground(Color.BLACK);
+		endRestartButton.setFont(new Font("AR DESTINE", Font.ITALIC, 29));
+		GridBagConstraints gbc_endRestartButton = new GridBagConstraints();
+		gbc_endRestartButton.insets = new Insets(0, 0, 5, 0);
+		gbc_endRestartButton.gridx = 0;
+		gbc_endRestartButton.gridy = 2;
+		gameOverPanel.add(endRestartButton, gbc_endRestartButton);
+		
+		endExitButton = new JButton("Exit Game");
+		endExitButton.setFont(new Font("AR DESTINE", Font.ITALIC, 29));
+		GridBagConstraints gbc_endExitButton = new GridBagConstraints();
+		gbc_endExitButton.insets = new Insets(0, 0, 5, 0);
+		gbc_endExitButton.gridx = 0;
+		gbc_endExitButton.gridy = 4;
+		gameOverPanel.add(endExitButton, gbc_endExitButton);
+		setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{pausePanel, gameOverPanel}));
 		
 		resumeButton.addActionListener(new java.awt.event.ActionListener() {
-	        public void actionPerformed(java.awt.event.ActionEvent evt) {
-	            resumeButtonActionPerformed();
-	        }
-	    });
-	    quitButton.addActionListener(new java.awt.event.ActionListener() {
-	        public void actionPerformed(java.awt.event.ActionEvent evt) {
-	            quitButtonActionPerformed();
-	        }
-	    });
-		
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				resumeButtonActionPerformed();
+			}
+		});
+		restartButton.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				restartButtonActionPerformed();
+			}
+		});
+		endRestartButton.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				restartButtonActionPerformed();
+			}
+		});
+		exitButton.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				exitButtonActionPerformed();
+			}
+		});
+		endExitButton.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				exitButtonActionPerformed();
+			}
+		});
 	}
 
-	protected void quitButtonActionPerformed() {
+	protected void exitButtonActionPerformed() {
+		Game.game.resetAll();
 		Game.game.setState(GameState.MENU);
+	}
+
+	protected void restartButtonActionPerformed() {
+		Game.game.setupGame();
+		Game.game.setState(GameState.PLAYING);
 	}
 
 	protected void resumeButtonActionPerformed() {
 		Game.game.setState(GameState.PLAYING);
 	}
+	
+	
 
 }

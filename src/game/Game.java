@@ -68,18 +68,8 @@ public class Game implements ActionListener, KeyListener {
 		
 		gapsWalls = new Walls(true, BOUNDARY_COLOR);
 		noGapsWalls = new Walls(false, BOUNDARY_COLOR);
-		playerOneSnake = new Snake(MIDDLE, GAME_SIZE - 5*BLOCK_SIZE, 3, Direction.NORTH);
-		playerTwoSnake = new Snake(MIDDLE, 5*BLOCK_SIZE, 3, Direction.SOUTH);
-		computerSnake = new Snake(MIDDLE, 5*BLOCK_SIZE, 3, Direction.SOUTH);
-		badFruit = new PoisonousFruit(BLOCK_SIZE + (int) (BLOCK_SIZE*(Math.floor(Math.abs((rand.nextInt(GAME_SIZE - (3*BLOCK_SIZE)))/BLOCK_SIZE)))),
-				BLOCK_SIZE + (int) (BLOCK_SIZE*(Math.floor(Math.abs((rand.nextInt(GAME_SIZE - (3*BLOCK_SIZE)))/BLOCK_SIZE)))));
-		
-		goodFruit = new NutritiousFruit(BLOCK_SIZE + (int) (BLOCK_SIZE*(Math.floor(Math.abs((rand.nextInt(GAME_SIZE - (3*BLOCK_SIZE)))/BLOCK_SIZE)))),
-				BLOCK_SIZE + (int) (BLOCK_SIZE*(Math.floor(Math.abs((rand.nextInt(GAME_SIZE - (3*BLOCK_SIZE)))/BLOCK_SIZE)))));
-		
-		playerOneControl = new KeyEvent(gameWindow, 0, 0, 0, KeyEvent.VK_0, '0');
-		playerTwoControl = new KeyEvent(gameWindow, 0, 0, 0, KeyEvent.VK_0, '0');
-		pauseControl = new KeyEvent(gameWindow, 0, 0, 0, KeyEvent.VK_0, '0');
+
+		setupGame();
 		
 		mode = GameMode.NONE;
 		state = GameState.MENU;
@@ -271,7 +261,7 @@ public class Game implements ActionListener, KeyListener {
 	public void actionPerformed(ActionEvent e) {
 		
 		if(renderer == null) {
-			renderer = game.gameWindow.getGamePanel();
+			renderer = game.gameWindow.getRenderer();
 		}
 		
 		if(pauseControl.getKeyCode() == KeyEvent.VK_ESCAPE || pauseControl.getKeyCode() == KeyEvent.VK_SPACE) {
@@ -437,7 +427,9 @@ public class Game implements ActionListener, KeyListener {
 	public void setState(GameState state) {
 		this.state = state;
 		JPanel content = game.gameWindow.getContentPane();
+		JPanel pauseContent = game.gameWindow.getPauseMenu();
 		CardLayout layout = (CardLayout) content.getLayout();
+		CardLayout pauseLayout = (CardLayout) pauseContent.getLayout();
 		switch(this.state) {
 			case MENU: {
 				layout.invalidateLayout(content);
@@ -446,7 +438,9 @@ public class Game implements ActionListener, KeyListener {
 			}
 			case PAUSED: {
 				layout.invalidateLayout(content);
-				layout.show(content, "Pause Menu");
+				layout.show(content, "Game");
+				pauseLayout.show(pauseContent, "Pause");
+				game.gameWindow.getPauseMenu().setVisible(true);
 				timer.stop();
 				break;
 			}
@@ -458,6 +452,7 @@ public class Game implements ActionListener, KeyListener {
 			case PLAYING: {
 				layout.invalidateLayout(content);
 				layout.show(content, "Game");
+				game.gameWindow.getPauseMenu().setVisible(false);
 				game.gameWindow.requestFocus();
 				timer = new Timer(1000/SPEED, this);
 				timer.start();
@@ -465,6 +460,8 @@ public class Game implements ActionListener, KeyListener {
 			}
 			case GAMEOVER: {
 				timer.stop();
+				pauseLayout.show(pauseContent, "Game Over");
+				game.gameWindow.getPauseMenu().setVisible(true);
 				break;
 			}
 			default: {
@@ -527,6 +524,28 @@ public class Game implements ActionListener, KeyListener {
 	 */
 	public Renderer getRenderer() {
 		return renderer;
+	}
+
+	public void resetAll() {
+		timer.stop();
+		mode = GameMode.NONE;
+		fruitOption = null;
+		gapsOption = null;
+		setupGame();
+		//TODO: Change Main Menu to card layout, and add states which cause the proper menu to be selected upon exiting.
+	}
+
+	public void setupGame() {
+		playerOneSnake = new Snake(MIDDLE, GAME_SIZE - 5*BLOCK_SIZE, 3, Direction.NORTH);
+		playerTwoSnake = new Snake(MIDDLE, 5*BLOCK_SIZE, 3, Direction.SOUTH);
+		computerSnake = new Snake(MIDDLE, 5*BLOCK_SIZE, 3, Direction.SOUTH);
+		
+		resetGoodFruit();
+		resetBadFruit();
+		
+		playerOneControl = new KeyEvent(gameWindow, 0, 0, 0, KeyEvent.VK_0, '0');
+		playerTwoControl = new KeyEvent(gameWindow, 0, 0, 0, KeyEvent.VK_0, '0');
+		pauseControl = new KeyEvent(gameWindow, 0, 0, 0, KeyEvent.VK_0, '0');
 	}
 
 }
