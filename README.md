@@ -6,6 +6,7 @@ Maybe I should replace the snakes' body parts with pictures of Kevin Durant, and
   * Multiple fruit types (ex. poisonous causes the snake length to shrink)
   * Option of classic (one fruit type), or new game modes
   * Option of solo play and local multiplayer
+  * Option of player vs computer play :runner: :vs: :robot:
   * Detailed menu
   * Pause function
   * Optional wall gaps
@@ -14,9 +15,8 @@ Maybe I should replace the snakes' body parts with pictures of Kevin Durant, and
   * ~~Multiple fruit types (ex. poisonous causes the snake length to shrink)~~
   * ~~Option of classic (one fruit type), or new game modes~~
   * ~~Option of solo play and local multiplayer~~
-  * Option of player vs computer play :runner: :vs: :robot:
+  * ~~Option of player vs computer play~~ :runner: :vs: :robot:
   * High-score persistence with XML. :floppy_disk:
-  * Multiple map sizes :page_facing_up:
   * ~~Detailed menu~~
   * ~~Pause function~~
   * ~~Optional wall gaps~~
@@ -29,3 +29,4 @@ Maybe I should replace the snakes' body parts with pictures of Kevin Durant, and
   * Difficulty levels? :skull:
   * Effects when eating a fruit and colliding? :boom:
   * Sounds? :speaker:
+  * Multiple map sizes? :page_facing_up:
