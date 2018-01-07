@@ -2,15 +2,12 @@ package game;
 
 import java.awt.CardLayout;
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.HashSet;
 import java.util.Random;
 
 import javax.swing.JFrame;
@@ -22,6 +19,7 @@ import characters.PoisonousFruit;
 import characters.Snake;
 import characters.Walls;
 import controls.Direction;
+import controls.SnakeAI;
 import graphics.Draw;
 import graphics.Renderer;
 
@@ -45,8 +43,10 @@ public class Game implements ActionListener, KeyListener {
 	private Random rand;
 	
 	private KeyEvent playerOneControl, playerTwoControl, pauseControl;
-	
+	private Direction computerControl;
+
 	private GameState state;
+	
 	private GameMode mode;
 	private GameOptions fruitOption, gapsOption;
 
@@ -57,7 +57,7 @@ public class Game implements ActionListener, KeyListener {
 	}
 	
 	public Game() {
-//		renderer = new Renderer();
+		
 		gameWindow = new GameFrame();
 		
 		rand = new Random(System.currentTimeMillis());
@@ -72,8 +72,7 @@ public class Game implements ActionListener, KeyListener {
 		setupGame();
 		
 		mode = GameMode.NONE;
-		state = GameState.MENU;
-		
+		state = GameState.MAIN_MENU;
 	}
 	
 	public void repaint(Graphics2D g) {
@@ -291,6 +290,10 @@ public class Game implements ActionListener, KeyListener {
 					break;
 				}
 			}
+			if (mode == GameMode.SOLO_VS) {
+				SnakeAI.calculateComputerMove();
+				computerSnake.slither(computerControl);
+			}
 			
 			if (mode == GameMode.LOCAL_MULTIPLAYER || mode == GameMode.ONLINE_MULTIPLAYER) {
 				switch (playerTwoControl.getKeyCode()) {
@@ -362,7 +365,7 @@ public class Game implements ActionListener, KeyListener {
 					}
 				} 
 				for (Rectangle rect : playerTwoSnake.getBodyParts()) {
-					if (playerTwoSnake.getBodyParts().getFirst().intersects(rect) && rect != playerOneSnake.getBodyParts().getFirst()) {
+					if (playerTwoSnake.getBodyParts().getFirst().intersects(rect) && rect != playerTwoSnake.getBodyParts().getFirst()) {
 						game.setState(GameState.GAMEOVER);
 						return;
 					}
@@ -384,6 +387,22 @@ public class Game implements ActionListener, KeyListener {
 					resetBadFruit();
 				} 
 			}
+			if(mode == GameMode.SOLO_VS) {
+				if(computerSnake.getBodyParts().getFirst().intersects(goodFruit.getFruit().getFrame())) {
+					computerSnake.grow();
+					resetGoodFruit();
+				}
+				if (fruitOption == GameOptions.TWO_FRUITS) {
+					if (computerSnake.getBodyParts().getFirst().intersects(badFruit.getFruit().getFrame())) {
+						if(computerSnake.getBodyParts().size() == 1) {
+							game.setState(GameState.GAMEOVER);
+							return;
+						}
+						computerSnake.shrink();
+						resetBadFruit();
+					} 
+				}
+			}
 			
 			//Wall collisions
 			if (gapsOption == GameOptions.GAPS) {
@@ -401,12 +420,49 @@ public class Game implements ActionListener, KeyListener {
 					}
 				} 
 			}
+			if(mode == GameMode.SOLO_VS) {
+				if (gapsOption == GameOptions.GAPS) {
+					for (Rectangle rect : gapsWalls.getEdges()) {
+						if (computerSnake.getBodyParts().getFirst().intersects(rect)) {
+							game.setState(GameState.GAMEOVER);
+							return;
+						}
+					} 
+				} else {
+					for (Rectangle rect : noGapsWalls.getEdges()) {
+						if (computerSnake.getBodyParts().getFirst().intersects(rect)) {
+							game.setState(GameState.GAMEOVER);
+							return;
+						}
+					} 
+				}
+			}
 			
 			//Snake collisions
 			for (Rectangle rect : playerOneSnake.getBodyParts()) {
 				if (playerOneSnake.getBodyParts().getFirst().intersects(rect) && rect != playerOneSnake.getBodyParts().getFirst()) {
 					game.setState(GameState.GAMEOVER);
 					return;
+				}
+			}
+			if (mode == GameMode.SOLO_VS) {
+				for (Rectangle rect : playerOneSnake.getBodyParts()) {
+					if (computerSnake.getBodyParts().getFirst().intersects(rect)) {
+						game.setState(GameState.GAMEOVER);
+						return;
+					}
+				}
+				for (Rectangle rect : computerSnake.getBodyParts()) {
+					if (playerOneSnake.getBodyParts().getFirst().intersects(rect)) {
+						game.setState(GameState.GAMEOVER);
+						return;
+					}
+				}
+				for (Rectangle rect : computerSnake.getBodyParts()) {
+					if (computerSnake.getBodyParts().getFirst().intersects(rect) && rect != computerSnake.getBodyParts().getFirst()) {
+						game.setState(GameState.GAMEOVER);
+						return;
+					}
 				}
 			}
 			
@@ -431,9 +487,19 @@ public class Game implements ActionListener, KeyListener {
 		CardLayout layout = (CardLayout) content.getLayout();
 		CardLayout pauseLayout = (CardLayout) pauseContent.getLayout();
 		switch(this.state) {
-			case MENU: {
+			case MAIN_MENU: {
 				layout.invalidateLayout(content);
 				layout.show(content, "Main Menu");
+				break;
+			}
+			case FRUIT_MENU: {
+				layout.invalidateLayout(content);
+				layout.show(content, "Fruit Menu");
+				break;
+			}
+			case GAPS_MENU: {
+				layout.invalidateLayout(content);
+				layout.show(content, "Gaps Menu");
 				break;
 			}
 			case PAUSED: {
@@ -532,13 +598,12 @@ public class Game implements ActionListener, KeyListener {
 		fruitOption = null;
 		gapsOption = null;
 		setupGame();
-		//TODO: Change Main Menu to card layout, and add states which cause the proper menu to be selected upon exiting.
 	}
 
 	public void setupGame() {
 		playerOneSnake = new Snake(MIDDLE, GAME_SIZE - 5*BLOCK_SIZE, 3, Direction.NORTH);
-		playerTwoSnake = new Snake(MIDDLE, 5*BLOCK_SIZE, 3, Direction.SOUTH);
-		computerSnake = new Snake(MIDDLE, 5*BLOCK_SIZE, 3, Direction.SOUTH);
+		playerTwoSnake = new Snake(MIDDLE, 4*BLOCK_SIZE, 3, Direction.SOUTH);
+		computerSnake = new Snake(MIDDLE, 4*BLOCK_SIZE, 3, Direction.SOUTH);
 		
 		resetGoodFruit();
 		resetBadFruit();
@@ -547,5 +612,39 @@ public class Game implements ActionListener, KeyListener {
 		playerTwoControl = new KeyEvent(gameWindow, 0, 0, 0, KeyEvent.VK_0, '0');
 		pauseControl = new KeyEvent(gameWindow, 0, 0, 0, KeyEvent.VK_0, '0');
 	}
+	
+	/**
+	 * @return the computerSnake
+	 */
+	public Snake getComputerSnake() {
+		return computerSnake;
+	}
+	
+	/**
+	 * @return the playerOneSnake
+	 */
+	public Snake getPlayerOneSnake() {
+		return playerOneSnake;
+	}
 
+	/**
+	 * @return the badFruit
+	 */
+	public PoisonousFruit getBadFruit() {
+		return badFruit;
+	}
+
+	/**
+	 * @return the goodFruit
+	 */
+	public NutritiousFruit getGoodFruit() {
+		return goodFruit;
+	}
+	
+	/**
+	 * @param computerControl the computerControl to set
+	 */
+	public void setComputerControl(Direction computerControl) {
+		this.computerControl = computerControl;
+	}
 }

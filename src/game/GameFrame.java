@@ -1,33 +1,30 @@
 package game;
 
-import java.awt.BorderLayout;
-import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
 import java.awt.CardLayout;
 import java.awt.Dimension;
 
-import javax.swing.JLayeredPane;
-import java.awt.FlowLayout;
 import org.eclipse.wb.swing.FocusTraversalOnArray;
 
 import graphics.Renderer;
 
 import java.awt.Component;
-import java.awt.GridBagLayout;
-import java.awt.Color;
-import javax.swing.border.MatteBorder;
 
 public class GameFrame extends JFrame {
 
-	private JPanel contentPane, gamePanel;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2502638443874663551L;
+	
+	private JPanel contentPane;
 	private Renderer renderer;
 	private MainMenu mainMenu;
+	private FruitOptionsMenu fruitMenu;
+	private GapsOptionsMenu gapsMenu;
 	private HighScoresMenu highScoresMenu;
 	
-	private WindowState state;
 	private PauseMenu pauseMenu;
 
 	/**
@@ -50,15 +47,18 @@ public class GameFrame extends JFrame {
 		mainMenu = new MainMenu();
 		contentPane.add(mainMenu, "Main Menu");
 		
+		fruitMenu = new FruitOptionsMenu();
+		contentPane.add(fruitMenu, "Fruit Menu");
+		
+		gapsMenu = new GapsOptionsMenu();
+		contentPane.add(gapsMenu, "Gaps Menu");
+		
 		highScoresMenu = new HighScoresMenu();
 		contentPane.add(highScoresMenu, "High Scores");
 		
-		gamePanel = new JPanel();
 		renderer = new Renderer();
-		contentPane.add(gamePanel, "Game");
-		gamePanel.setLayout(null);
-		
-		gamePanel.add(renderer);
+		contentPane.add(renderer, "Game");
+		renderer.setLayout(null);
 		
 		pauseMenu = new PauseMenu();
 		pauseMenu.setBounds(215, 215, 430, 430);
@@ -69,26 +69,9 @@ public class GameFrame extends JFrame {
 //		gridBagLayout.rowHeights = new int[]{40, 81, 24, 28, 37, 28, 37, 28};
 //		gridBagLayout.columnWeights = new double[]{0.0};
 //		gridBagLayout.columnWidths = new int[]{623};
-		gamePanel.add(pauseMenu);
-		contentPane.setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{mainMenu, highScoresMenu, gamePanel}));
+		renderer.add(pauseMenu);
+		contentPane.setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{mainMenu, fruitMenu, gapsMenu, highScoresMenu, renderer}));
 	}
-	
-//	public void setupGraphics() {
-//		Component[] components = gamePanel.getComponents();
-//		boolean isFound = false;
-//		for (Component c : components) {
-//			if (c == Game.game.getRenderer()) {
-//				isFound = true;
-//				break;
-//			} else {
-//				isFound = false;
-//				continue;
-//			}
-//		}
-//		if(!isFound) {
-//			gamePanel.add(Game.game.getRenderer());
-//		}
-//	}
 	
 	/**
 	 * @return the contentPane

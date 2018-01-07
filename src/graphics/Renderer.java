@@ -10,7 +10,7 @@ import game.Game;
 public class Renderer extends JPanel {
 
 	private static final long serialVersionUID = 8669219894045737438L;
-
+	
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);

@@ -2,9 +2,7 @@ package game;
 
 import javax.swing.JPanel;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.Insets;
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 
 import javax.swing.JButton;
@@ -13,11 +11,8 @@ import javax.swing.SwingConstants;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.Color;
-import javax.swing.border.BevelBorder;
 import javax.swing.border.MatteBorder;
 import java.awt.CardLayout;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 import org.eclipse.wb.swing.FocusTraversalOnArray;
 import java.awt.Component;
 
@@ -42,7 +37,7 @@ public class PauseMenu extends JPanel {
 		
 		pausePanel = new JPanel();
 		pausePanel.setBorder(new MatteBorder(5, 5, 5, 5, (Color) Color.GREEN));
-		pausePanel.setBackground(Color.GRAY);
+//		pausePanel.setBackground(Color.GRAY);
 		add(pausePanel, "Pause");
 		GridBagLayout gbl_pausePanel = new GridBagLayout();
 		gbl_pausePanel.columnWidths = new int[] {430};
@@ -154,7 +149,7 @@ public class PauseMenu extends JPanel {
 
 	protected void exitButtonActionPerformed() {
 		Game.game.resetAll();
-		Game.game.setState(GameState.MENU);
+		Game.game.setState(GameState.MAIN_MENU);
 	}
 
 	protected void restartButtonActionPerformed() {
