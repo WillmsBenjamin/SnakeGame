@@ -8,6 +8,7 @@ public enum GameState {
 	HIGH_SCORES,
 	PAUSED,
 	GAMEOVER,
+	GAMEOVER_SCORES,
 	PLAYING;
 	
 }

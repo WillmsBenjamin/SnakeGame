@@ -22,10 +22,13 @@ import controls.Direction;
 import controls.SnakeAI;
 import graphics.Draw;
 import graphics.Renderer;
+import persistence.PersistenceXStream;
+import scoring.HighScores;
+import scoring.Score;
 
 public class Game implements ActionListener, KeyListener {
 
-	public static final int GRID_SIZE = 43, BLOCK_SIZE = 20, GAME_SIZE = GRID_SIZE*BLOCK_SIZE, SPEED = 10,
+	public static final int NUM_SCORES = 5, GRID_SIZE = 43, BLOCK_SIZE = 20, GAME_SIZE = GRID_SIZE*BLOCK_SIZE, SPEED = 10,
 			MIDDLE = (int) (BLOCK_SIZE*(Math.floor(Math.abs((GAME_SIZE/2)/BLOCK_SIZE))));
 	
 	public static Color PLAYER_ONE_COLOR = Color.cyan.darker(), PLAYER_TWO_COLOR = Color.green.darker(),
@@ -46,18 +49,23 @@ public class Game implements ActionListener, KeyListener {
 	private Direction computerControl;
 
 	private GameState state;
-	
 	private GameMode mode;
 	private GameOptions fruitOption, gapsOption;
 
 	private GameFrame gameWindow;
 	
+	private static String fileName = "output/snakegame.xml";
+	
+	private Score score;
+	public HighScores hs;
+	
 	public static void main(String[] args) {
-		game = new Game();
+		final HighScores hs = PersistenceXStream.initializeModelManager(fileName);
+		game = new Game(hs);
 	}
 	
-	public Game() {
-		
+	public Game(HighScores hs) {
+		this.hs = hs;
 		gameWindow = new GameFrame();
 		
 		rand = new Random(System.currentTimeMillis());
@@ -375,12 +383,18 @@ public class Game implements ActionListener, KeyListener {
 			//Fruit Collisions
 			if(playerOneSnake.getBodyParts().getFirst().intersects(goodFruit.getFruit().getFrame())) {
 				playerOneSnake.grow();
+				score.setScore(score.getScore() + 1);
 				resetGoodFruit();
 			}
 			if (fruitOption == GameOptions.TWO_FRUITS) {
 				if (playerOneSnake.getBodyParts().getFirst().intersects(badFruit.getFruit().getFrame())) {
+					score.setScore(score.getScore() - 1);
 					if(playerOneSnake.getBodyParts().size() == 1) {
-						game.setState(GameState.GAMEOVER);
+						if (game.getMode() == GameMode.SOLO || game.getMode() == GameMode.SOLO_VS) {
+							game.setState(GameState.GAMEOVER_SCORES);
+						} else {
+							game.setState(GameState.GAMEOVER);
+						}
 						return;
 					}
 					playerOneSnake.shrink();
@@ -395,7 +409,7 @@ public class Game implements ActionListener, KeyListener {
 				if (fruitOption == GameOptions.TWO_FRUITS) {
 					if (computerSnake.getBodyParts().getFirst().intersects(badFruit.getFruit().getFrame())) {
 						if(computerSnake.getBodyParts().size() == 1) {
-							game.setState(GameState.GAMEOVER);
+							game.setState(GameState.GAMEOVER_SCORES);
 							return;
 						}
 						computerSnake.shrink();
@@ -408,14 +422,23 @@ public class Game implements ActionListener, KeyListener {
 			if (gapsOption == GameOptions.GAPS) {
 				for (Rectangle rect : gapsWalls.getEdges()) {
 					if (playerOneSnake.getBodyParts().getFirst().intersects(rect)) {
-						game.setState(GameState.GAMEOVER);
+						if (game.getMode() == GameMode.SOLO || game.getMode() == GameMode.SOLO_VS) {
+							game.setState(GameState.GAMEOVER_SCORES);
+							System.out.println("THIS ONE");
+						} else {
+							game.setState(GameState.GAMEOVER);
+						}
 						return;
 					}
 				} 
 			} else {
 				for (Rectangle rect : noGapsWalls.getEdges()) {
 					if (playerOneSnake.getBodyParts().getFirst().intersects(rect)) {
-						game.setState(GameState.GAMEOVER);
+						if (game.getMode() == GameMode.SOLO || game.getMode() == GameMode.SOLO_VS) {
+							game.setState(GameState.GAMEOVER_SCORES);
+						} else {
+							game.setState(GameState.GAMEOVER);
+						}
 						return;
 					}
 				} 
@@ -424,14 +447,14 @@ public class Game implements ActionListener, KeyListener {
 				if (gapsOption == GameOptions.GAPS) {
 					for (Rectangle rect : gapsWalls.getEdges()) {
 						if (computerSnake.getBodyParts().getFirst().intersects(rect)) {
-							game.setState(GameState.GAMEOVER);
+							game.setState(GameState.GAMEOVER_SCORES);
 							return;
 						}
 					} 
 				} else {
 					for (Rectangle rect : noGapsWalls.getEdges()) {
 						if (computerSnake.getBodyParts().getFirst().intersects(rect)) {
-							game.setState(GameState.GAMEOVER);
+							game.setState(GameState.GAMEOVER_SCORES);
 							return;
 						}
 					} 
@@ -441,26 +464,30 @@ public class Game implements ActionListener, KeyListener {
 			//Snake collisions
 			for (Rectangle rect : playerOneSnake.getBodyParts()) {
 				if (playerOneSnake.getBodyParts().getFirst().intersects(rect) && rect != playerOneSnake.getBodyParts().getFirst()) {
-					game.setState(GameState.GAMEOVER);
+					if (game.getMode() == GameMode.SOLO || game.getMode() == GameMode.SOLO_VS) {
+						game.setState(GameState.GAMEOVER_SCORES);
+					} else {
+						game.setState(GameState.GAMEOVER);
+					}
 					return;
 				}
 			}
 			if (mode == GameMode.SOLO_VS) {
 				for (Rectangle rect : playerOneSnake.getBodyParts()) {
 					if (computerSnake.getBodyParts().getFirst().intersects(rect)) {
-						game.setState(GameState.GAMEOVER);
+						game.setState(GameState.GAMEOVER_SCORES);
 						return;
 					}
 				}
 				for (Rectangle rect : computerSnake.getBodyParts()) {
 					if (playerOneSnake.getBodyParts().getFirst().intersects(rect)) {
-						game.setState(GameState.GAMEOVER);
+						game.setState(GameState.GAMEOVER_SCORES);
 						return;
 					}
 				}
 				for (Rectangle rect : computerSnake.getBodyParts()) {
 					if (computerSnake.getBodyParts().getFirst().intersects(rect) && rect != computerSnake.getBodyParts().getFirst()) {
-						game.setState(GameState.GAMEOVER);
+						game.setState(GameState.GAMEOVER_SCORES);
 						return;
 					}
 				}
@@ -527,6 +554,14 @@ public class Game implements ActionListener, KeyListener {
 			case GAMEOVER: {
 				timer.stop();
 				pauseLayout.show(pauseContent, "Game Over");
+				game.gameWindow.getPauseMenu().setVisible(true);
+				break;
+			}
+			case GAMEOVER_SCORES: {
+				timer.stop();
+				PauseMenu menu = (PauseMenu)pauseContent;
+				menu.prepareHighScoresPanel();
+				pauseLayout.show(pauseContent, "High Scores");
 				game.gameWindow.getPauseMenu().setVisible(true);
 				break;
 			}
@@ -611,6 +646,8 @@ public class Game implements ActionListener, KeyListener {
 		playerOneControl = new KeyEvent(gameWindow, 0, 0, 0, KeyEvent.VK_0, '0');
 		playerTwoControl = new KeyEvent(gameWindow, 0, 0, 0, KeyEvent.VK_0, '0');
 		pauseControl = new KeyEvent(gameWindow, 0, 0, 0, KeyEvent.VK_0, '0');
+		
+		score = new Score(0);
 	}
 	
 	/**
@@ -646,5 +683,12 @@ public class Game implements ActionListener, KeyListener {
 	 */
 	public void setComputerControl(Direction computerControl) {
 		this.computerControl = computerControl;
+	}
+	
+	/**
+	 * @return the score
+	 */
+	public Score getScore() {
+		return score;
 	}
 }
