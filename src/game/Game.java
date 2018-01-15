@@ -561,7 +561,7 @@ public class Game implements ActionListener, KeyListener {
 				timer.stop();
 				PauseMenu menu = (PauseMenu)pauseContent;
 				menu.prepareHighScoresPanel();
-				pauseLayout.show(pauseContent, "High Scores");
+				pauseLayout.show(pauseContent, "High Score");
 				game.gameWindow.getPauseMenu().setVisible(true);
 				break;
 			}

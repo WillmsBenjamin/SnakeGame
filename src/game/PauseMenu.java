@@ -20,6 +20,7 @@ import scoring.Score;
 
 import java.awt.Component;
 import javax.swing.JTextField;
+import javax.swing.DropMode;
 
 public class PauseMenu extends JPanel {
 	
@@ -134,7 +135,7 @@ public class PauseMenu extends JPanel {
 		add(highScorePanel, "High Score");
 		GridBagLayout gbl_highScorePanel = new GridBagLayout();
 		gbl_highScorePanel.columnWidths = new int[] {430};
-		gbl_highScorePanel.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+		gbl_highScorePanel.rowHeights = new int[] {30, 0, 20, 0, 20, 0, 20, 0, 20, 0, 20, 0, 20, 0};
 		gbl_highScorePanel.columnWeights = new double[]{1.0};
 		gbl_highScorePanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		highScorePanel.setLayout(gbl_highScorePanel);
@@ -157,10 +158,12 @@ public class PauseMenu extends JPanel {
 		highScorePanel.add(score1Label, gbc_score1Label);
 		
 		score1TextField = new JTextField();
+		score1TextField.setHorizontalAlignment(SwingConstants.CENTER);
 		score1TextField.setSelectedTextColor(Color.GREEN);
 		score1TextField.setBackground(Color.GRAY);
-		score1TextField.setFont(new Font("AR DESTINE", Font.PLAIN, 13));
+		score1TextField.setFont(new Font("AR DESTINE", Font.PLAIN, 17));
 		GridBagConstraints gbc_score1TextField = new GridBagConstraints();
+		gbc_score1TextField.fill = GridBagConstraints.HORIZONTAL;
 		gbc_score1TextField.insets = new Insets(0, 0, 5, 0);
 		gbc_score1TextField.gridx = 0;
 		gbc_score1TextField.gridy = 3;
@@ -176,10 +179,12 @@ public class PauseMenu extends JPanel {
 		highScorePanel.add(score2Label, gbc_score2Label);
 		
 		score2TextField = new JTextField();
+		score2TextField.setHorizontalAlignment(SwingConstants.CENTER);
 		score2TextField.setBackground(Color.GRAY);
 		score2TextField.setSelectedTextColor(Color.GREEN);
-		score2TextField.setFont(new Font("AR DESTINE", Font.PLAIN, 13));
+		score2TextField.setFont(new Font("AR DESTINE", Font.PLAIN, 17));
 		GridBagConstraints gbc_score2TextField = new GridBagConstraints();
+		gbc_score2TextField.fill = GridBagConstraints.HORIZONTAL;
 		gbc_score2TextField.insets = new Insets(0, 0, 5, 0);
 		gbc_score2TextField.gridx = 0;
 		gbc_score2TextField.gridy = 5;
@@ -195,10 +200,12 @@ public class PauseMenu extends JPanel {
 		highScorePanel.add(score3Label, gbc_score3Label);
 		
 		score3TextField = new JTextField();
+		score3TextField.setHorizontalAlignment(SwingConstants.CENTER);
 		score3TextField.setSelectedTextColor(Color.GREEN);
 		score3TextField.setBackground(Color.GRAY);
-		score3TextField.setFont(new Font("AR DESTINE", Font.PLAIN, 13));
+		score3TextField.setFont(new Font("AR DESTINE", Font.PLAIN, 17));
 		GridBagConstraints gbc_score3TextField = new GridBagConstraints();
+		gbc_score3TextField.fill = GridBagConstraints.HORIZONTAL;
 		gbc_score3TextField.insets = new Insets(0, 0, 5, 0);
 		gbc_score3TextField.gridx = 0;
 		gbc_score3TextField.gridy = 7;
@@ -214,10 +221,12 @@ public class PauseMenu extends JPanel {
 		highScorePanel.add(score4Label, gbc_score4Label);
 		
 		score4TextField = new JTextField();
+		score4TextField.setHorizontalAlignment(SwingConstants.CENTER);
 		score4TextField.setBackground(Color.GRAY);
 		score4TextField.setSelectedTextColor(Color.GREEN);
-		score4TextField.setFont(new Font("AR DESTINE", Font.PLAIN, 13));
+		score4TextField.setFont(new Font("AR DESTINE", Font.PLAIN, 17));
 		GridBagConstraints gbc_score4TextField = new GridBagConstraints();
+		gbc_score4TextField.fill = GridBagConstraints.HORIZONTAL;
 		gbc_score4TextField.insets = new Insets(0, 0, 5, 0);
 		gbc_score4TextField.gridx = 0;
 		gbc_score4TextField.gridy = 9;
@@ -233,11 +242,12 @@ public class PauseMenu extends JPanel {
 		highScorePanel.add(score5Label, gbc_score5Label);
 		
 		score5TextField = new JTextField();
+		score5TextField.setHorizontalAlignment(SwingConstants.CENTER);
 		score5TextField.setSelectedTextColor(Color.GREEN);
 		score5TextField.setBackground(Color.GRAY);
-		score5TextField.setFont(new Font("AR DESTINE", Font.PLAIN, 13));
+		score5TextField.setFont(new Font("AR DESTINE", Font.PLAIN, 17));
 		GridBagConstraints gbc_score5TextField = new GridBagConstraints();
-		gbc_score5TextField.anchor = GridBagConstraints.NORTH;
+		gbc_score5TextField.fill = GridBagConstraints.HORIZONTAL;
 		gbc_score5TextField.insets = new Insets(0, 0, 5, 0);
 		gbc_score5TextField.gridx = 0;
 		gbc_score5TextField.gridy = 11;
@@ -293,7 +303,7 @@ public class PauseMenu extends JPanel {
 				PersistenceXStream.saveToXMLwithXStream(Game.game.hs);
 				Game.game.setState(GameState.GAMEOVER);
 			} else {
-				score1TextField.setText("Name can't be empty!");
+				score1TextField.setText("Please enter your name!");
 				highScorePanel.repaint();
 			}
 			break;
@@ -305,7 +315,7 @@ public class PauseMenu extends JPanel {
 				PersistenceXStream.saveToXMLwithXStream(Game.game.hs);
 				Game.game.setState(GameState.GAMEOVER);
 			} else {
-				score2TextField.setText("Name can't be empty!");
+				score2TextField.setText("Please enter your name!");
 				highScorePanel.repaint();
 			}
 			break;
@@ -317,7 +327,7 @@ public class PauseMenu extends JPanel {
 				PersistenceXStream.saveToXMLwithXStream(Game.game.hs);
 				Game.game.setState(GameState.GAMEOVER);
 			} else {
-				score3TextField.setText("Name can't be empty!");
+				score3TextField.setText("Please enter your name!");
 				highScorePanel.repaint();
 			}
 			break;
@@ -329,7 +339,7 @@ public class PauseMenu extends JPanel {
 				PersistenceXStream.saveToXMLwithXStream(Game.game.hs);
 				Game.game.setState(GameState.GAMEOVER);
 			} else {
-				score4TextField.setText("Name can't be empty!");
+				score4TextField.setText("Please enter your name!");
 				highScorePanel.repaint();
 			}
 			break;
@@ -341,7 +351,7 @@ public class PauseMenu extends JPanel {
 				PersistenceXStream.saveToXMLwithXStream(Game.game.hs);
 				Game.game.setState(GameState.GAMEOVER);
 			} else {
-				score5TextField.setText("Name can't be empty!");
+				score5TextField.setText("Please enter your name!");
 				highScorePanel.repaint();
 			}
 			break;
@@ -355,7 +365,7 @@ public class PauseMenu extends JPanel {
 	}
 	
 	protected boolean validateInput(String s) {
-		if(s.length() == 0) {
+		if(s.length() == 0 || s.equals("Your Name")) {
 			return false;
 		} else {
 			return true;
