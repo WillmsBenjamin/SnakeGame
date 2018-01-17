@@ -28,6 +28,7 @@ public abstract class PersistenceXStream {
         HighScores hs;
         setFilename(fileName);
         setAlias("Score", Score.class);
+        setAlias("highScores", HighScores.class);
 
         // load model if exists, create otherwise
         File file = new File(fileName);

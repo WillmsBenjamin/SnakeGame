@@ -63,4 +63,10 @@ public class HighScores {
 		}
 		return -1;
 	}
+	
+	public void delete()
+	  {
+	    highScores.clear();
+	  }
+
 }

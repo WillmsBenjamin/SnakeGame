@@ -365,7 +365,7 @@ public class PauseMenu extends JPanel {
 	}
 	
 	protected boolean validateInput(String s) {
-		if(s.length() == 0 || s.equals("Your Name")) {
+		if(s.length() == 0 || s.equals("Your Name") || s.equals("Please enter your name!")) {
 			return false;
 		} else {
 			return true;

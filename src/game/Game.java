@@ -424,7 +424,6 @@ public class Game implements ActionListener, KeyListener {
 					if (playerOneSnake.getBodyParts().getFirst().intersects(rect)) {
 						if (game.getMode() == GameMode.SOLO || game.getMode() == GameMode.SOLO_VS) {
 							game.setState(GameState.GAMEOVER_SCORES);
-							System.out.println("THIS ONE");
 						} else {
 							game.setState(GameState.GAMEOVER);
 						}
