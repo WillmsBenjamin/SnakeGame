@@ -7,6 +7,7 @@ Maybe I should replace the snakes' body parts with pictures of Kevin Durant, and
   * Option of classic (one fruit type), or new game modes
   * Option of solo play and local multiplayer
   * Option of player vs computer play :runner: :vs: :robot:
+  * High-score persistence with XML :floppy_disk:
   * Detailed menu
   * Pause function
   * Optional wall gaps
@@ -16,7 +17,7 @@ Maybe I should replace the snakes' body parts with pictures of Kevin Durant, and
   * ~~Option of classic (one fruit type), or new game modes~~
   * ~~Option of solo play and local multiplayer~~
   * ~~Option of player vs computer play~~ :runner: :vs: :robot:
-  * High-score persistence with XML. :floppy_disk:
+  * ~~High-score persistence with XML~~ :floppy_disk:
   * ~~Detailed menu~~
   * ~~Pause function~~
   * ~~Optional wall gaps~~
