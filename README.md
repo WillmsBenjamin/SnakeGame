@@ -21,6 +21,7 @@ Maybe I should replace the snakes' body parts with pictures of Kevin Durant, and
   * ~~Detailed menu~~
   * ~~Pause function~~
   * ~~Optional wall gaps~~
+  * Standalone high scores page
  
 ## Possible Additions:
 
@@ -31,3 +32,9 @@ Maybe I should replace the snakes' body parts with pictures of Kevin Durant, and
   * Effects when eating a fruit and colliding? :boom:
   * Sounds? :speaker:
   * Multiple map sizes? :page_facing_up:
+  
+## Known Bugs:
+  * The computer controlled snake sometimes makes a "wrong" turn based on the defined rules. 
+      There must be a bug in the rule definition.
+  * There is an issue with the high scores submission page. It is sometimes shown when it
+      shouldn't be, and when this occurs, the page does not function.
